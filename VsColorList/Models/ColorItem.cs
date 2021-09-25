@@ -1,17 +1,20 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace VsColorList.Models
 {
-    public class ColorListItem
+    public class ColorItem
     {
-        public string Name;
+        public string Name = string.Empty;
+
         public ThemeResourceKey Key;
+
         public ThemeResourceKeyType KeyType;
+
         public Guid Category;
-        public Color LightColor;
-        public Color DarkColor;
-        public Color BlueColor;
+
+        public Dictionary<string, Color> Colors = new Dictionary<string, Color>();
     }
 }

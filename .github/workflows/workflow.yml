@@ -1,0 +1,28 @@
+name: VsColorList
+
+on:
+  push:
+    branches:
+      - master
+      - 'feature/**'
+
+env:
+  version: '1.0.${{ github.run_number }}'
+
+jobs:
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v2
+        with:
+          context: Website
+          push: true
+          tags: sboulema/vscolorlist:latest
