@@ -1,5 +1,3 @@
-FROM nginx
+FROM lipanski/docker-static-website
 
-COPY . /usr/share/nginx/html/
-
-EXPOSE 80
+ADD --chmod=0644 . .
