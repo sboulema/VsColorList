@@ -9,7 +9,8 @@ namespace VsColorList.Helpers
 {
     public static class ExcelHelper
     {
-        public static string WriteToExcel(List<ColorItem> colors, List<ColorItem> environmentColors)
+        public static string WriteToExcel(List<ColorItem> colors,
+            List<ColorItem> environmentColors, List<ColorItem> classificationColors)
         {
             var path = Path.Combine(Path.GetTempPath(), "VsColorList") + ".xlsx";
 
@@ -22,6 +23,7 @@ namespace VsColorList.Helpers
             {
                 AddWorkSheet(workbook, environmentColors, "EnvironmentColors");
                 AddWorkSheet(workbook, colors, "VsColors");
+                AddWorkSheet(workbook, classificationColors, "ClassificationColors");
 
                 workbook.SaveAs(path);
             }
@@ -66,7 +68,7 @@ namespace VsColorList.Helpers
 
         private static void AddRow(IXLWorksheet worksheet, ColorItem colorItem, int row)
         {
-            worksheet.Cell(row, 1).Value = colorItem.Key;
+            worksheet.Cell(row, 1).Value = GetIdentifier(colorItem);
 
             worksheet.Cell(row, 2).Style.Fill.PatternType = XLFillPatternValues.Solid;
             worksheet.Cell(row, 2).Style.Fill.BackgroundColor = ToXLColor(colorItem.Colors["light"]);
@@ -121,6 +123,16 @@ namespace VsColorList.Helpers
                 default:
                     return guid.ToString();
             }
+        }
+
+        private static string GetIdentifier(ColorItem colorItem)
+        {
+            if (colorItem.Key == null)
+            {
+                return colorItem.Name;
+            }
+
+            return colorItem.Key.ToString();
         }
     }
 }

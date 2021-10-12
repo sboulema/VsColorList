@@ -1,6 +1,5 @@
 ﻿using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Community.VisualStudio.Toolkit;
 using Microsoft.VisualStudio.Shell;
@@ -19,16 +18,19 @@ namespace VsColorList
             await SettingsHelper.Import("Light.vssettings");
             var lightColors = VsColors.GetCurrentThemedColorValues().OrderBy(kp => kp.Key.Name).ToList();
             var envLightList = ColorListHelper.GetColorList("light");
+            var classificationLightList = await ColorListHelper.GetClassificationColorList("light");
 
             // Dark
             await SettingsHelper.Import("Dark.vssettings");
             var darkColors = VsColors.GetCurrentThemedColorValues().OrderBy(kp => kp.Key.Name).ToList();
             var envDarkList = ColorListHelper.GetColorList("dark");
+            var classificationDarkList = await ColorListHelper.GetClassificationColorList("dark");
 
             // Blue
             await SettingsHelper.Import("Blue.vssettings");
             var blueColors = VsColors.GetCurrentThemedColorValues().OrderBy(kp => kp.Key.Name).ToList();
             var envBlueList = ColorListHelper.GetColorList("blue");
+            var classificationBlueList = await ColorListHelper.GetClassificationColorList("blue");
 
             await SettingsHelper.Import(tempBackupPath);
 
@@ -38,8 +40,11 @@ namespace VsColorList
             // Environment Colors
             var environmentColorsList = ColorListHelper.GetEnvironmentColorList(envLightList, envDarkList, envBlueList);
 
+            // Classification Colors
+            var classificationColorsList = ColorListHelper.CombineClassificationColorList(classificationLightList, classificationDarkList, classificationBlueList);
+
             // Write to Excel
-            var filePath = ExcelHelper.WriteToExcel(vsColorsList, environmentColorsList);
+            var filePath = ExcelHelper.WriteToExcel(vsColorsList, environmentColorsList, classificationColorsList);
 
             // Open Excel
             Process.Start(filePath);

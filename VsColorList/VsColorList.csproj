@@ -59,9 +59,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-	<VSCTCompile Include="VsColorListCommandTable.vsct">
-		<ResourceName>Menus.ctmenu</ResourceName>
-	</VSCTCompile>
+    <VSCTCompile Include="VsColorListCommandTable.vsct">
+      <ResourceName>Menus.ctmenu</ResourceName>
+    </VSCTCompile>
     <Content Include="Resources\Blue.vssettings">
       <IncludeInVSIX>true</IncludeInVSIX>
     </Content>
@@ -104,13 +104,8 @@
     <PackageReference Include="Community.VisualStudio.Toolkit">
       <Version>17.0.76.285-pre</Version>
     </PackageReference>
-    <PackageReference Include="Community.VisualStudio.VSCT">
-      <Version>16.0.29.6</Version>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.VSSDK.BuildTools">
-      <Version>17.0.5217-preview5</Version>
+      <Version>17.0.5232</Version>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
