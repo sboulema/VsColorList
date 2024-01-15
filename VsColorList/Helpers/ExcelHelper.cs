@@ -9,8 +9,11 @@ namespace VsColorList.Helpers
 {
     public static class ExcelHelper
     {
-        public static string WriteToExcel(List<ColorItem> colors,
-            List<ColorItem> environmentColors, List<ColorItem> classificationColors)
+        public static string WriteToExcel(
+            List<ColorItem> vsBrushesList,
+            List<ColorItem> colors,
+            List<ColorItem> environmentColors,
+            List<ColorItem> classificationColors)
         {
             var path = Path.Combine(Path.GetTempPath(), "VsColorList") + ".xlsx";
 
@@ -21,6 +24,7 @@ namespace VsColorList.Helpers
 
             using (var workbook = new XLWorkbook())
             {
+                AddWorkSheet(workbook, vsBrushesList, "VsBrushes");
                 AddWorkSheet(workbook, environmentColors, "EnvironmentColors");
                 AddWorkSheet(workbook, colors, "VsColors");
                 AddWorkSheet(workbook, classificationColors, "ClassificationColors");

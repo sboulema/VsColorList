@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Media;
 using VsColorList.Models;
 
@@ -14,7 +15,7 @@ namespace VsColorList.Helpers
 {
     public static class ColorListHelper
     {
-        public static List<ColorItem> GetColorList(string themeName)
+        public static List<ColorItem> GetEnvironmentColorList(string themeName)
         {
             var colorList = new List<ColorItem>();
 
@@ -35,6 +36,37 @@ namespace VsColorList.Helpers
             }
 
             return colorList;
+        }
+
+        public static List<ColorItem> GetVsBrushColorList(string themeName)
+        {
+            var colorList = new List<ColorItem>();
+
+            foreach (var brushProperty in typeof(VsBrushes).GetProperties())
+            {
+                var name = brushProperty.GetValue(null);
+                var brush = Application.Current.Resources[name] as SolidColorBrush;
+
+                if (brush == null)
+                {
+                    continue;
+                }
+
+                var colorItem = new ColorItem
+                {
+                    Name = brushProperty.Name,
+                    Colors = { { themeName, ToDrawingColor(brush) } }
+                };
+
+                colorList.Add(colorItem);
+            }
+
+            return colorList;
+        }
+
+        public static List<KeyValuePair<ThemeResourceKey, uint>> GetVsColorList()
+        {
+            return VsColors.GetCurrentThemedColorValues().OrderBy(kp => kp.Key.Name).ToList();
         }
 
         public static async Task<List<ColorItem>> GetClassificationColorList(string themeName)
@@ -68,11 +100,7 @@ namespace VsColorList.Helpers
                 var colorItem = new ColorItem
                 {
                     Name = classificationType.Classification,
-                    Colors = { { themeName, System.Drawing.Color.FromArgb(
-                        foregroundBrush.Color.A,
-                        foregroundBrush.Color.R,
-                        foregroundBrush.Color.G,
-                        foregroundBrush.Color.B) } }
+                    Colors = { { themeName, ToDrawingColor(foregroundBrush) } }
                 };
 
                 colorList.Add(colorItem);
@@ -81,24 +109,25 @@ namespace VsColorList.Helpers
             return colorList;
         }
 
-        public static List<ColorItem> GetEnvironmentColorList(List<ColorItem> lightColors,
-            List<ColorItem> darkColors, List<ColorItem> blueColors)
+        public static List<ColorItem> CombineEnvironmentColorList(
+            List<ColorItem> lightEnvironmentColorList,
+            List<ColorItem> darkEnvironmentColorList,
+            List<ColorItem> blueEnvironmentColorList)
         {
             var colorList = new List<ColorItem>();
 
-            for (var i = 0; i < lightColors.Count; i++)
+            for (var i = 0; i < lightEnvironmentColorList.Count; i++)
             {
                 var colorItem = new ColorItem
                 {
-                    Key = lightColors[i].Key,
-                    KeyType = lightColors[i].Key.KeyType,
-                    Category = lightColors[i].Key.Category
+                    Key = lightEnvironmentColorList[i].Key,
+                    KeyType = lightEnvironmentColorList[i].Key.KeyType,
+                    Category = lightEnvironmentColorList[i].Key.Category,
+                    Colors = lightEnvironmentColorList[i].Colors
+                        .Union(darkEnvironmentColorList[i].Colors)
+                        .Union(blueEnvironmentColorList[i].Colors)
+                        .ToDictionary(pair => pair.Key, pair => pair.Value)
                 };
-
-                colorItem.Colors = lightColors[i].Colors
-                    .Union(darkColors[i].Colors)
-                    .Union(blueColors[i].Colors)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 colorList.Add(colorItem);
             }
@@ -106,22 +135,24 @@ namespace VsColorList.Helpers
             return colorList;
         }
 
-        public static List<ColorItem> GetVsColorList(List<KeyValuePair<ThemeResourceKey, uint>> lightColors,
-            List<KeyValuePair<ThemeResourceKey, uint>> darkColors, List<KeyValuePair<ThemeResourceKey, uint>> blueColors)
+        public static List<ColorItem> CombineVsColorList(
+            List<KeyValuePair<ThemeResourceKey, uint>> lightVsColorList,
+            List<KeyValuePair<ThemeResourceKey, uint>> darkVsColorList,
+            List<KeyValuePair<ThemeResourceKey, uint>> blueVsColorList)
         {
             var colorList = new List<ColorItem>();
 
-            for (var i = 0; i < lightColors.Count; i++)
+            for (var i = 0; i < lightVsColorList.Count; i++)
             {
                 colorList.Add(new ColorItem
                 {
-                    Key = lightColors[i].Key,
-                    KeyType = lightColors[i].Key.KeyType,
-                    Category = lightColors[i].Key.Category,
+                    Key = lightVsColorList[i].Key,
+                    KeyType = lightVsColorList[i].Key.KeyType,
+                    Category = lightVsColorList[i].Key.Category,
                     Colors = {
-                        { "light", VSColorTheme.GetThemedColor(lightColors[i].Key) },
-                        { "dark", VSColorTheme.GetThemedColor(darkColors[i].Key) },
-                        { "blue", VSColorTheme.GetThemedColor(blueColors[i].Key) },
+                        { "light", VSColorTheme.GetThemedColor(lightVsColorList[i].Key) },
+                        { "dark", VSColorTheme.GetThemedColor(darkVsColorList[i].Key) },
+                        { "blue", VSColorTheme.GetThemedColor(blueVsColorList[i].Key) },
                     }
                 });
             }
@@ -129,27 +160,37 @@ namespace VsColorList.Helpers
             return colorList;
         }
 
-        public static List<ColorItem> CombineClassificationColorList(List<ColorItem> lightColors,
-            List<ColorItem> darkColors, List<ColorItem> blueColors)
+        public static List<ColorItem> CombineClassificationColorList(
+            List<ColorItem> lightClassificationList,
+            List<ColorItem> darkClassificationList,
+            List<ColorItem> blueClassificationList)
         {
             var colorList = new List<ColorItem>();
 
-            for (var i = 0; i < lightColors.Count; i++)
+            for (var i = 0; i < lightClassificationList.Count; i++)
             {
                 var colorItem = new ColorItem
                 {
-                    Name = lightColors[i].Name
+                    Name = lightClassificationList[i].Name,
+                    Colors = lightClassificationList[i].Colors
+                        .Union(darkClassificationList[i].Colors)
+                        .Union(blueClassificationList[i].Colors)
+                        .ToDictionary(pair => pair.Key, pair => pair.Value)
                 };
-
-                colorItem.Colors = lightColors[i].Colors
-                    .Union(darkColors[i].Colors)
-                    .Union(blueColors[i].Colors)
-                    .ToDictionary(pair => pair.Key, pair => pair.Value);
 
                 colorList.Add(colorItem);
             }
 
             return colorList;
+        }
+
+        private static System.Drawing.Color ToDrawingColor(SolidColorBrush solidColorBrush)
+        {
+            return System.Drawing.Color.FromArgb(
+                solidColorBrush.Color.A,
+                solidColorBrush.Color.R,
+                solidColorBrush.Color.G,
+                solidColorBrush.Color.B);
         }
     }
 }
