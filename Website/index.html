@@ -70,6 +70,11 @@
       var table = new Tabulator("#color-table", {
         height: "70%",
         layout: "fitDataStretch",
+        groupBy: "Type",
+        groupHeader: function(value, count, data, group) {
+          group.getElement().style.backgroundColor = "rgb(220, 212, 246)";
+          return value;
+        },
         columns: [
           {
             title: "Name",
@@ -127,6 +132,7 @@
           {
             title: "Type",
             field: "Type",
+            visible: false,
           },
           {
             title: "Notes",
