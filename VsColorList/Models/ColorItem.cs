@@ -11,9 +11,9 @@ namespace VsColorList.Models
 
         public ThemeResourceKey Key { get; set; }
 
-        public ThemeResourceKeyType KeyType { get; set; }
+        public ThemeResourceKeyType? KeyType { get; set; }
 
-        public Guid Category { get; set; }
+        public Guid? Category { get; set; }
 
         public Dictionary<string, Color> Colors { get; set; } = new Dictionary<string, Color>();
 

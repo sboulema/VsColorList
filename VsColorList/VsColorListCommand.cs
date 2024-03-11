@@ -43,19 +43,19 @@ namespace VsColorList
 
             // VS Brushes
             var vsBrushesList = ColorListHelper
-                .CombineClassificationColorList(lightVsBrushList, darkVsBrushList, blueVsBrushList);
+                .CombineColorLists(lightVsBrushList, darkVsBrushList, blueVsBrushList);
 
             // VS Colors
             var vsColorsList = ColorListHelper
-                .CombineEnvironmentColorList(lightVsColorList, darkVsColorList, blueVsColorList);
+                .CombineColorLists(lightVsColorList, darkVsColorList, blueVsColorList);
 
             // Environment Colors
             var environmentColorsList = ColorListHelper
-                .CombineEnvironmentColorList(lightEnvironmentColorList, darkEnvironmentColorList, blueEnvironmentColorList);
+                .CombineColorLists(lightEnvironmentColorList, darkEnvironmentColorList, blueEnvironmentColorList);
 
             // Classification Colors
             var classificationColorsList = ColorListHelper
-                .CombineClassificationColorList(lightClassificationList, darkClassificationList, blueClassificationList);
+                .CombineColorLists(lightClassificationList, darkClassificationList, blueClassificationList);
 
             // Write to Excel
             await VS.StatusBar.ShowProgressAsync("Writing colors to Excel file", 4, 5);

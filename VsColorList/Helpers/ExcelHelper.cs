@@ -102,7 +102,7 @@ namespace VsColorList.Helpers
 
         private static XLColor ToXLColor(Color color) => XLColor.FromArgb(color.ToArgb());
 
-        private static string ToCategoryName(Guid guid)
+        private static string ToCategoryName(Guid? guid)
         {
             switch (guid.ToString())
             {

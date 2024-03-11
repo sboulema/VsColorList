@@ -122,47 +122,25 @@ namespace VsColorList.Helpers
             return colorList;
         }
 
-        public static List<ColorItem> CombineEnvironmentColorList(
-            List<ColorItem> lightEnvironmentColorList,
-            List<ColorItem> darkEnvironmentColorList,
-            List<ColorItem> blueEnvironmentColorList)
+        public static List<ColorItem> CombineColorLists(
+            List<ColorItem> lightColorList,
+            List<ColorItem> darkColorList,
+            List<ColorItem> blueColorList)
         {
             var colorList = new List<ColorItem>();
 
-            for (var i = 0; i < lightEnvironmentColorList.Count; i++)
+            for (var i = 0; i < lightColorList.Count; i++)
             {
                 var colorItem = new ColorItem
                 {
-                    Key = lightEnvironmentColorList[i].Key,
-                    KeyType = lightEnvironmentColorList[i].Key.KeyType,
-                    Category = lightEnvironmentColorList[i].Key.Category,
-                    Colors = lightEnvironmentColorList[i].Colors
-                        .Union(darkEnvironmentColorList[i].Colors)
-                        .Union(blueEnvironmentColorList[i].Colors)
-                        .ToDictionary(pair => pair.Key, pair => pair.Value)
-                };
-
-                colorList.Add(colorItem);
-            }
-
-            return colorList;
-        }
-
-        public static List<ColorItem> CombineClassificationColorList(
-            List<ColorItem> lightClassificationList,
-            List<ColorItem> darkClassificationList,
-            List<ColorItem> blueClassificationList)
-        {
-            var colorList = new List<ColorItem>();
-
-            for (var i = 0; i < lightClassificationList.Count; i++)
-            {
-                var colorItem = new ColorItem
-                {
-                    Name = lightClassificationList[i].Name,
-                    Colors = lightClassificationList[i].Colors
-                        .Union(darkClassificationList[i].Colors)
-                        .Union(blueClassificationList[i].Colors)
+                    Name = lightColorList[i].Name,
+                    Key = lightColorList[i].Key,
+                    KeyType = lightColorList[i].Key?.KeyType,
+                    Category = lightColorList[i].Key?.Category,
+                    Type = lightColorList[i].Type,
+                    Colors = lightColorList[i].Colors
+                        .Union(darkColorList[i].Colors)
+                        .Union(blueColorList[i].Colors)
                         .ToDictionary(pair => pair.Key, pair => pair.Value)
                 };
 
