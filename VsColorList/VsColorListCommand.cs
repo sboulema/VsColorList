@@ -1,9 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
-using System.Windows.Media;
 using Community.VisualStudio.Toolkit;
-using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.VisualStudio.Shell;
+using Newtonsoft.Json;
 using VsColorList.Helpers;
 
 namespace VsColorList
@@ -16,23 +16,26 @@ namespace VsColorList
             var tempBackupPath = await SettingsHelper.Export();
 
             // Light
+            await VS.StatusBar.ShowProgressAsync("Getting Light theme colors", 1, 5);
             await SettingsHelper.Import("Light.vssettings");
             var lightVsBrushList = ColorListHelper.GetVsBrushColorList("light");
-            var lightVsColorList = ColorListHelper.GetVsColorList();
+            var lightVsColorList = ColorListHelper.GetVsColorList("light");
             var lightEnvironmentColorList = ColorListHelper.GetEnvironmentColorList("light");
             var lightClassificationList = await ColorListHelper.GetClassificationColorList("light");
 
             // Dark
+            await VS.StatusBar.ShowProgressAsync("Getting Dark theme colors", 2, 5);
             await SettingsHelper.Import("Dark.vssettings");
             var darkVsBrushList = ColorListHelper.GetVsBrushColorList("dark");
-            var darkVsColorList = ColorListHelper.GetVsColorList();
+            var darkVsColorList = ColorListHelper.GetVsColorList("dark");
             var darkEnvironmentColorList = ColorListHelper.GetEnvironmentColorList("dark");
             var darkClassificationList = await ColorListHelper.GetClassificationColorList("dark");
 
             // Blue
+            await VS.StatusBar.ShowProgressAsync("Getting Blue theme colors", 3, 5);
             await SettingsHelper.Import("Blue.vssettings");
             var blueVsBrushList = ColorListHelper.GetVsBrushColorList("blue");
-            var blueVsColorList = ColorListHelper.GetVsColorList();
+            var blueVsColorList = ColorListHelper.GetVsColorList("blue");
             var blueEnvironmentColorList = ColorListHelper.GetEnvironmentColorList("blue");
             var blueClassificationList = await ColorListHelper.GetClassificationColorList("blue");
 
@@ -44,7 +47,7 @@ namespace VsColorList
 
             // VS Colors
             var vsColorsList = ColorListHelper
-                .CombineVsColorList(lightVsColorList, darkVsColorList, blueVsColorList);
+                .CombineEnvironmentColorList(lightVsColorList, darkVsColorList, blueVsColorList);
 
             // Environment Colors
             var environmentColorsList = ColorListHelper
@@ -55,8 +58,19 @@ namespace VsColorList
                 .CombineClassificationColorList(lightClassificationList, darkClassificationList, blueClassificationList);
 
             // Write to Excel
+            await VS.StatusBar.ShowProgressAsync("Writing colors to Excel file", 4, 5);
             var filePath = ExcelHelper
                 .WriteToExcel(vsBrushesList, vsColorsList, environmentColorsList, classificationColorsList);
+
+            // Write to JSON
+            await VS.StatusBar.ShowProgressAsync("Writing colors to JSON file", 5, 5);
+            var json = JsonConvert
+                .SerializeObject(
+                    vsBrushesList
+                        .Concat(vsColorsList)
+                        .Concat(environmentColorsList)
+                        .Concat(classificationColorsList));
+            File.WriteAllText(Path.ChangeExtension(filePath, "json"), json);
 
             await VS.MessageBox.ShowAsync(filePath);
         }

@@ -11,7 +11,7 @@ namespace VsColorList.Helpers
     {
         public static string WriteToExcel(
             List<ColorItem> vsBrushesList,
-            List<ColorItem> colors,
+            List<ColorItem> vsColors,
             List<ColorItem> environmentColors,
             List<ColorItem> classificationColors)
         {
@@ -26,7 +26,7 @@ namespace VsColorList.Helpers
             {
                 AddWorkSheet(workbook, vsBrushesList, "VsBrushes");
                 AddWorkSheet(workbook, environmentColors, "EnvironmentColors");
-                AddWorkSheet(workbook, colors, "VsColors");
+                AddWorkSheet(workbook, vsColors, "VsColors");
                 AddWorkSheet(workbook, classificationColors, "ClassificationColors");
 
                 workbook.SaveAs(path);

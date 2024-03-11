@@ -7,14 +7,16 @@ namespace VsColorList.Models
 {
     public class ColorItem
     {
-        public string Name = string.Empty;
+        public string Name { get; set; } = string.Empty;
 
-        public ThemeResourceKey Key;
+        public ThemeResourceKey Key { get; set; }
 
-        public ThemeResourceKeyType KeyType;
+        public ThemeResourceKeyType KeyType { get; set; }
 
-        public Guid Category;
+        public Guid Category { get; set; }
 
-        public Dictionary<string, Color> Colors = new Dictionary<string, Color>();
+        public Dictionary<string, Color> Colors { get; set; } = new Dictionary<string, Color>();
+
+        public string Type { get; set; } = string.Empty;
     }
 }

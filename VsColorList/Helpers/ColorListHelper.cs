@@ -29,7 +29,8 @@ namespace VsColorList.Helpers
                 var colorItem = new ColorItem
                 {
                     Key = themeResourceKey,
-                    Colors = { { themeName, VSColorTheme.GetThemedColor(themeResourceKey) } }
+                    Colors = { { themeName, VSColorTheme.GetThemedColor(themeResourceKey) } },
+                    Type = "EnvironmentColor",
                 };
 
                 colorList.Add(colorItem);
@@ -55,7 +56,8 @@ namespace VsColorList.Helpers
                 var colorItem = new ColorItem
                 {
                     Name = brushProperty.Name,
-                    Colors = { { themeName, ToDrawingColor(brush) } }
+                    Colors = { { themeName, ToDrawingColor(brush) } },
+                    Type = "VsBrush",
                 };
 
                 colorList.Add(colorItem);
@@ -64,10 +66,20 @@ namespace VsColorList.Helpers
             return colorList;
         }
 
-        public static List<KeyValuePair<ThemeResourceKey, uint>> GetVsColorList()
-        {
-            return VsColors.GetCurrentThemedColorValues().OrderBy(kp => kp.Key.Name).ToList();
-        }
+        public static List<ColorItem> GetVsColorList(string themeName)
+            => VsColors
+                .GetCurrentThemedColorValues()
+                .OrderBy(kp => kp.Key.Name)
+                .Select(kp => new ColorItem
+                {
+                    Name = kp.Key.Name,
+                    Category = kp.Key.Category,
+                    Key = kp.Key,
+                    KeyType = kp.Key.KeyType,
+                    Type = "VsColor",
+                    Colors = { { themeName, System.Drawing.Color.FromArgb((int)kp.Value) } }
+                })
+                .ToList();
 
         public static async Task<List<ColorItem>> GetClassificationColorList(string themeName)
         {
@@ -100,7 +112,8 @@ namespace VsColorList.Helpers
                 var colorItem = new ColorItem
                 {
                     Name = classificationType.Classification,
-                    Colors = { { themeName, ToDrawingColor(foregroundBrush) } }
+                    Colors = { { themeName, ToDrawingColor(foregroundBrush) } },
+                    Type = "ClassificationColor",
                 };
 
                 colorList.Add(colorItem);
@@ -130,31 +143,6 @@ namespace VsColorList.Helpers
                 };
 
                 colorList.Add(colorItem);
-            }
-
-            return colorList;
-        }
-
-        public static List<ColorItem> CombineVsColorList(
-            List<KeyValuePair<ThemeResourceKey, uint>> lightVsColorList,
-            List<KeyValuePair<ThemeResourceKey, uint>> darkVsColorList,
-            List<KeyValuePair<ThemeResourceKey, uint>> blueVsColorList)
-        {
-            var colorList = new List<ColorItem>();
-
-            for (var i = 0; i < lightVsColorList.Count; i++)
-            {
-                colorList.Add(new ColorItem
-                {
-                    Key = lightVsColorList[i].Key,
-                    KeyType = lightVsColorList[i].Key.KeyType,
-                    Category = lightVsColorList[i].Key.Category,
-                    Colors = {
-                        { "light", VSColorTheme.GetThemedColor(lightVsColorList[i].Key) },
-                        { "dark", VSColorTheme.GetThemedColor(darkVsColorList[i].Key) },
-                        { "blue", VSColorTheme.GetThemedColor(blueVsColorList[i].Key) },
-                    }
-                });
             }
 
             return colorList;
