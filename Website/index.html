@@ -1,12 +1,13 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/tabulator-tables/dist/css/tabulator_bulma.min.css">
     <link rel="icon" type="image/png" href="ColorPalette.png" />
     <title>VS Color List</title>
   </head>
 
   <body style="height:100%">
-    <nav class="navbar" role="navigation" aria-label="main navigation">
+    <nav class="navbar" style="background: linear-gradient(195deg, rgb(237, 236, 255) 15%, rgb(220, 212, 246) 70%)">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <img src="ColorPalette256.png" height="28">
@@ -19,7 +20,7 @@
         </a>
       </div>
     
-      <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-menu">
         <div class="navbar-start">
           <a class="navbar-item" href="/">
             VS2022
@@ -28,7 +29,9 @@
           <a class="navbar-item" href="vs2017.html">
             VS2017
           </a>
+        </div>
 
+        <div class="navbar-end">
           <a class="navbar-item" href="https://github.com/sboulema/VsColorList">
             GitHub
           </a>
@@ -36,20 +39,101 @@
       </div>
     </nav>
 
-    <section class="hero">
-      <div class="hero-body">
-        <p class="title">
-          Visual Studio's Color List
-        </p>
-        <p class="subtitle">
-          The themed colors contained in Visual Studio's VsColors and EnvironmentColors
-        </p>
-      </div>
-    </section>
+    <div class="container is-fluid">
+      <section class="hero">
+        <div class="hero-body">
+          <p class="title">
+            Visual Studio's Color List
+          </p>
+          <p class="subtitle">
+            The themed colors contained in Visual Studio's VsColors and EnvironmentColors
+          </p>
+        </div>
+      </section>
+  
+      <table id="color-table" class="table is-narrow is-bordered"></table>
+    </div>
 
-    <section class="section pt-0">
-      <iframe width="100%" height="70%" frameborder="0" scrolling="no" src="https://onedrive.live.com/embed?resid=3FFE5F8AEF97BE63%2113714&authkey=%21ACYY8CqoO7QvBA8&em=2&wdHideGridlines=True&wdHideHeaders=True&wdDownloadButton=True&wdInConfigurator=True"></iframe>
-    </section>
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+
+    <script>
+      var rgbColorFormatter = function (cell) {
+        cell.getElement().style.backgroundColor = this.sanitizeHTML(`rgb(${cell.getValue()})`);
+	      return "";
+      }
+
+      var rgbHexFormatter = function (cell) {
+        var rgb = cell.getValue().split(",")
+        return "#" + ((1 << 24) + (parseInt(rgb[0].trim()) << 16) + (parseInt(rgb[1].trim()) << 8) + parseInt(rgb[2].trim())).toString(16).slice(1).toUpperCase();
+      }
+
+      var table = new Tabulator("#color-table", {
+        height: "70%",
+        columns: [
+          {
+            title: "Name",
+            field: "Name",
+            headerFilter: "input",
+          },
+          {
+            title: "Light",
+            field: "Colors.light",
+            formatter: rgbColorFormatter,
+          },
+          {
+            title: "Dark",
+            field: "Colors.dark",
+            formatter: rgbColorFormatter,
+          },
+          {
+            title: "Blue",
+            field: "Colors.blue",
+            formatter: rgbColorFormatter,
+          },
+          {
+            title: "Light Hex",
+            field: "Colors.light",
+            formatter: rgbHexFormatter,
+            headerFilter: "input",
+          },
+          {
+            title: "Dark Hex",
+            field: "Colors.dark",
+            formatter: rgbHexFormatter,
+            headerFilter: "input",
+          },
+          {
+            title: "Blue Hex",
+            field: "Colors.blue",
+            formatter: rgbHexFormatter,
+            headerFilter: "input",
+          },
+          {
+            title: "Light RGB",
+            field: "Colors.light",
+            headerFilter: "input",
+          },
+          {
+            title: "Dark RGB",
+            field: "Colors.dark",
+            headerFilter: "input",
+          },
+          {
+            title: "Blue RGB",
+            field: "Colors.blue",
+            headerFilter: "input",
+          },
+          {
+            title: "Type",
+            field: "Type",
+          },
+        ],
+      });
+
+      table.on("tableBuilt", function() {
+        table.setData("VsColorList.VS2022.json");
+      });
+    </script>
 
     <script>
       document.addEventListener('DOMContentLoaded', () => {
