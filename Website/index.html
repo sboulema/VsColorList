@@ -1,13 +1,14 @@
 <html>
   <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/tabulator-tables/dist/css/tabulator_bulma.min.css">
-    <link rel="icon" type="image/png" href="ColorPalette.png" />
     <title>VS Color List</title>
+    <link rel="icon" type="image/png" href="ColorPalette.png" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/tabulator-tables/dist/css/tabulator_bulma.min.css">
+    <script src="https://kit.fontawesome.com/40e1534a8b.js" crossorigin="anonymous"></script>
   </head>
 
   <body style="height:100%">
-    <nav class="navbar" style="background: linear-gradient(195deg, rgb(237, 236, 255) 15%, rgb(220, 212, 246) 70%)">
+    <nav class="navbar has-shadow" style="background: linear-gradient(195deg, rgb(237, 236, 255) 15%, rgb(220, 212, 246) 70%)">
       <div class="navbar-brand">
         <a class="navbar-item" href="/">
           <img src="ColorPalette256.png" height="28">
@@ -32,8 +33,21 @@
         </div>
 
         <div class="navbar-end">
+          <a class="navbar-item" href="https://bulma.io">
+            <img
+              src="https://bulma.io/images/made-with-bulma.png"
+              alt="Made with Bulma"
+              width="128"
+              height="24">
+          </a>
+
           <a class="navbar-item" href="https://github.com/sboulema/VsColorList">
-            GitHub
+            <span class="icon">
+              <i class="fab fa-github"></i>
+            </span>
+            <span>
+              GitHub
+            </span>
           </a>
         </div>
       </div>
@@ -46,12 +60,12 @@
             Visual Studio's Color List
           </p>
           <p class="subtitle">
-            The themed colors contained in Visual Studio's VsColors and EnvironmentColors
+            The themed colors contained within Visual Studio
           </p>
         </div>
       </section>
   
-      <table id="color-table" class="table is-narrow is-bordered"></table>
+      <div id="color-table" class="table is-narrow is-bordered"></div>
     </div>
 
     <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
@@ -67,6 +81,16 @@
         return "#" + ((1 << 24) + (parseInt(rgb[0].trim()) << 16) + (parseInt(rgb[1].trim()) << 8) + parseInt(rgb[2].trim())).toString(16).slice(1).toUpperCase();
       }
 
+      var notesMutator = function(value, data, type, params, component) {
+        var vsColorNotes = JSON.parse(window.localStorage.getItem("VsColorNotes"));
+
+        if (vsColorNotes == undefined) {
+          return;
+        }
+
+        return vsColorNotes[`${data.Type}.${data.Name}`];
+      }
+
       var table = new Tabulator("#color-table", {
         height: "70%",
         layout: "fitDataStretch",
@@ -75,7 +99,13 @@
           group.getElement().style.backgroundColor = "rgb(220, 212, 246)";
           return value;
         },
+        index: "Index",
         columns: [
+          {
+            title: "Name",
+            field: "Name",
+            headerFilter: "input",
+          },
           {
             title: "Name",
             field: "Name",
@@ -138,12 +168,26 @@
             title: "Notes",
             field: "Notes",
             editor: "input",
+            headerFilter: "input",
+            mutatorData: notesMutator,
           },
         ],
       });
 
       table.on("tableBuilt", function() {
         table.setData("VsColorList.VS2022.json");
+      });
+
+      table.on("cellEdited", function(cell) {
+        var rowData = cell.getRow().getData();        
+        var vsColorNotes = JSON.parse(window.localStorage.getItem("VsColorNotes"));
+
+        if (vsColorNotes == undefined) {
+          vsColorNotes = {};
+        }
+
+        vsColorNotes[`${rowData.Type}.${rowData.Name}`] = cell.getValue();
+        window.localStorage.setItem("VsColorNotes", JSON.stringify(vsColorNotes));
       });
     </script>
 
