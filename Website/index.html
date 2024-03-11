@@ -69,6 +69,7 @@
 
       var table = new Tabulator("#color-table", {
         height: "70%",
+        layout: "fitDataStretch",
         columns: [
           {
             title: "Name",
@@ -126,6 +127,11 @@
           {
             title: "Type",
             field: "Type",
+          },
+          {
+            title: "Notes",
+            field: "Notes",
+            editor: "input",
           },
         ],
       });
