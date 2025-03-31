@@ -28,6 +28,7 @@ namespace VsColorList.Helpers
 
                 var colorItem = new ColorItem
                 {
+                    Name = themeResourceKey.Name,
                     Key = themeResourceKey,
                     Colors = { { themeName, VSColorTheme.GetThemedColor(themeResourceKey) } },
                     Type = "EnvironmentColor",
@@ -46,9 +47,8 @@ namespace VsColorList.Helpers
             foreach (var brushProperty in typeof(VsBrushes).GetProperties())
             {
                 var name = brushProperty.GetValue(null);
-                var brush = Application.Current.Resources[name] as SolidColorBrush;
 
-                if (brush == null)
+                if (!(Application.Current.Resources[name] is SolidColorBrush brush))
                 {
                     continue;
                 }
@@ -151,12 +151,10 @@ namespace VsColorList.Helpers
         }
 
         private static System.Drawing.Color ToDrawingColor(SolidColorBrush solidColorBrush)
-        {
-            return System.Drawing.Color.FromArgb(
+            => System.Drawing.Color.FromArgb(
                 solidColorBrush.Color.A,
                 solidColorBrush.Color.R,
                 solidColorBrush.Color.G,
                 solidColorBrush.Color.B);
-        }
     }
 }
