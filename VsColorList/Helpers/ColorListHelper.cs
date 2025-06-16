@@ -28,10 +28,12 @@ namespace VsColorList.Helpers
 
                 var colorItem = new ColorItem
                 {
-                    Name = themeResourceKey.Name,
+                    Name = color.Name,
                     Key = themeResourceKey,
                     Colors = { { themeName, VSColorTheme.GetThemedColor(themeResourceKey) } },
                     Type = "EnvironmentColor",
+                    KeyType = themeResourceKey.KeyType,
+                    Category = themeResourceKey.Category,
                 };
 
                 colorList.Add(colorItem);
